@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -41,8 +43,82 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 		if movie.ID == movieId {
 			// ... is used to spread the slices into individual elements
 			movies = append(movies[:index], movies[index+1:]...)
+			break
 		}
 	}
+
+	json.NewEncoder(w).Encode(movies)
+}
+
+// GET MOVIE WITH ID HANDLER
+func getMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	movieId := params["id"]
+
+	for _, movie := range movies {
+
+		if movie.ID == movieId {
+			json.NewEncoder(w).Encode(movie)
+			return
+		}
+	}
+
+}
+
+// CREATE MOVIE HANDLER
+func createMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var newMovie Movie
+	/*Decoding response body to json and using pointer to save
+	the given data to newMovie struct.*/
+	json.NewDecoder(r.Body).Decode(&newMovie)
+
+	newMovie.ID = strconv.Itoa(rand.Intn(100000))
+
+	movies = append(movies, newMovie)
+
+	json.NewEncoder(w).Encode(movies)
+}
+
+// UPDATE MOVIE HANDLER
+/*
+PSEUDO CODE:
+1. set content type as json
+2. get movie id from params
+3. loop over movies and get desired movie x
+4. delete movie x
+5. add new movie with x.id that will be sent through postman
+*/
+func updateMovie(w http.ResponseWriter, r *http.Request) {
+	//seting content type as json
+	w.Header().Set("Content-Type", "application/json")
+
+	//getting movie id from params
+	params := mux.Vars(r)
+	upMovieId := params["id"]
+
+	//Iterating movies to find desired movie
+	for index, movie := range movies {
+		if movie.ID == upMovieId {
+			//Deleting movie after finding it using a cheeky method
+			movies = append(movies[:index], movies[index+1:]...)
+
+			//Creating a new movie
+			var newMovie Movie
+			//Converting the response body to json and putting the info in newMovie
+			json.NewDecoder(r.Body).Decode(&newMovie)
+			//Getting data for newMovie
+			newMovie.ID = upMovieId
+			newMovie.Title = params["title"]
+			//Putting the newMovie back to the slice
+			movies = append(movies, newMovie)
+			//Sending back response
+			json.NewEncoder(w).Encode(movies)
+			return
+		}
+	}
+
 }
 
 var movies []Movie
@@ -58,8 +134,8 @@ func main() {
 			Title: "Lele",
 			//Why Director is an '&' here? Look at readme (4)
 			Director: &Director{
-				Firstname:  "Rafid",
-				Secondname: "Niloy",
+				Firstname:  "Niloy",
+				Secondname: "Baitta",
 			}})
 
 	movies = append(movies,
@@ -79,7 +155,7 @@ func main() {
 			Title: "Journey of a Magi: Farhan",
 			Director: &Director{
 				Firstname:  "Mahadi",
-				Secondname: "Nikka",
+				Secondname: "Kala",
 			}})
 
 	//router.HandleFunc( path, handler).Methods("GET")
