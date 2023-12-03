@@ -1,4 +1,77 @@
-A simple CRUD API with GO
+A simple movies CRUD API with GO
+ - No DB is used 
+ - With simple architecture, as i am a fucking noob rn in Go 
 
 NEW THINGS LEARNED:
-1)
+1) GORILLA MUX
+Gorilla Mux is a popular routing and URL matching package 
+for building Go web servers. It is widely used for its 
+simplicity, flexibility, robustness, performance, 
+middleware support, community and resources, and 
+versatility.
+
+2) 
+router.HandleFunc("/movies", getMovies).Methods("GET") effectively 
+registers the getMovies handler for the /movies route and specifies 
+that it should only be invoked for GET requests.
+
+Here's a breakdown of the code:
+- router.HandleFunc: This part indicates that you're using 
+a routing library to register a handler function for a 
+specific route.
+
+- "/movies": This is the route path. It specifies that the 
+getMovies handler should be invoked when the request URL 
+matches /movies.
+
+- "getMovies": This is the handler function. It's the function 
+that will be executed when the /movies route is matched 
+and the HTTP method is GET.
+
+.Methods("GET"): This specifies that the handler function should 
+only be invoked for GET requests. It restricts the handler 
+to handle GET requests specifically.
+
+In summary, the code correctly registers the getMovies handler 
+for the /movies route and ensures that it only handles GET requests.
+
+3) err := http.ListenAndServe(":8000", router)
+In this case, router is a reference to a custom request handler, 
+most likely an instance of a routing library or a custom handler struct. 
+The http.ListenAndServe function will delegate incoming requests to this router, 
+which will handle routing and dispatch requests to the appropriate handler 
+functions based on the request path and method. This approach is suitable for 
+more complex applications that require routing and custom request handling.
+
+Whereas, err := http.ListenAndServe(":8000", nil)
+Here, passing nil as the second argument to http.ListenAndServe 
+indicates that you're not using a custom request handler. 
+This means that the ListenAndServe function will itself handle 
+incoming requests and respond with default messages. It's 
+typically used for simple applications that don't require custom 
+routing or request handling.
+
+4) Why * in the struct declaration and & in the initialization?
+-> In Go, parameters are 'passed by value', meaning it copies the 
+info in another mem loc and uses it inside the func. Here as the 
+type is an object(shut up, I'll refer it as an object) so making
+another copy is expensive in terms of resources. Therefore:
+  - & is used to store the mem loc of the Director
+  - * is used to dereference the Pointer and get the value it stores.
+ 
+ 5) *http.Request
+ It is generally recommended to use a pointer for the *http.Request 
+ parameter in HTTP handlers. This is because the http.Request object 
+ is a large and complex data structure, and copying it on each request 
+ can be inefficient. Using a pointer instead of a copy allows the handler 
+ to access and modify the request object directly, without incurring the 
+ overhead of copying the entire structure.
+
+ 6) RETURN JSON AS A RESPONSE
+ The getMovies function handles GET requests to the /movies route and 
+ sends back a list of movies in JSON format. It sets the Content-Type 
+ header to application/json and uses the json.NewEncoder function to 
+ encode the movies data into JSON format and write it to the http.ResponseWriter object.
+ This style of coding is commonly used for API endpoints and web 
+ applications that need to return JSON data. It is concise, efficient, 
+ and consistent, making it a valuable tool for handling JSON data in HTTP applications.
