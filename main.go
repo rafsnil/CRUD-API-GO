@@ -32,7 +32,17 @@ func getMovies(w http.ResponseWriter, r *http.Request) {
 
 // DELETE A MOVIE
 func deleteMovie(w http.ResponseWriter, r *http.Request) {
-	//To DO
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	movieId := params["id"]
+
+	//looping to find the movie with the desire id
+	for index, movie := range movies {
+		if movie.ID == movieId {
+			// ... is used to spread the slices into individual elements
+			movies = append(movies[:index], movies[index+1:]...)
+		}
+	}
 }
 
 var movies []Movie
