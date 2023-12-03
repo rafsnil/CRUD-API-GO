@@ -110,7 +110,6 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 			json.NewDecoder(r.Body).Decode(&newMovie)
 			//Getting data for newMovie
 			newMovie.ID = upMovieId
-			newMovie.Title = params["title"]
 			//Putting the newMovie back to the slice
 			movies = append(movies, newMovie)
 			//Sending back response
